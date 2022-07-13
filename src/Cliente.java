@@ -36,7 +36,7 @@ public class Cliente {
         this.tipo = tipo;
     }
 
-    public void criarCliente() {
+    public static void criarCliente() {
         String novoNome;
         System.out.println("Digite o nome do cliente:");
         novoNome = BaseDados.getInstancia().getInput().nextLine();
@@ -46,7 +46,7 @@ public class Cliente {
         novoDocumento = BaseDados.getInstancia().getInput().nextLine();
 
         int novoTipo;
-        System.out.println("Digite o tipo do cliente (0 - PF, 1 - PJ:");
+        System.out.println("Digite o tipo do cliente (0 - PF, 1 - PJ):");
         novoTipo = Integer.parseInt(BaseDados.getInstancia().getInput().nextLine());
 
         if (novoTipo < 0 || novoTipo > 1) {
@@ -57,7 +57,8 @@ public class Cliente {
         Cliente novoCliente = new Cliente();
         novoCliente.setNome(novoNome);
         novoCliente.setDocumento(novoDocumento);
-        novoCliente.setTipo(novoTipo == 0 ? TipoCliente.PF : TipoCliente.PJ);
+        novoCliente.setTipo(novoTipo == 0 ? TipoCliente.PF : novoCliente.getTipo());
+        novoCliente.setTipo(novoTipo == 1 ? TipoCliente.PJ : novoCliente.getTipo());
 
         if (BaseDados.getInstancia().adicionarCliente(novoCliente)) {
             System.out.println("Cliente criado com sucesso!");

@@ -37,9 +37,9 @@ public class BaseDados {
     }
 
     public boolean adicionarCliente(Cliente novoCliente) {
-        boolean podeAdicionar = !clientes
+        boolean podeAdicionar = clientes
                 .stream()
-                .anyMatch(c -> c.getDocumento().equals(novoCliente.getDocumento()));
+                .noneMatch(c -> c.getDocumento().equals(novoCliente.getDocumento()));
 
         if (podeAdicionar) {
             novoCliente.setId(clientes.size());
@@ -51,10 +51,10 @@ public class BaseDados {
     }
 
     public boolean adicionarConta(Conta novaConta) {
-        boolean podeAdicionar = !contas
+        boolean podeAdicionar = contas
                 .stream()
                 .filter(c -> c.getTipo() == novaConta.getTipo())
-                .anyMatch(c -> c.getCliente().getDocumento().equals(novaConta.getCliente().getDocumento()));
+                .noneMatch(c -> c.getCliente().getDocumento().equals(novaConta.getCliente().getDocumento()));
 
         if (podeAdicionar) {
             novaConta.setId(contas.size());
@@ -72,10 +72,18 @@ public class BaseDados {
                 .findFirst();
     }
 
-    public Optional<Conta> buscarConta(TipoConta tipo, String documento) {
+    public Optional<Conta> buscarConta(String documento, TipoConta tipoConta) {
+        for (Conta conta : contas) {
+            System.out.println(conta.getId());
+            System.out.println(conta.getSaldo());
+            System.out.println(conta.getTipo());
+        }
+
+        System.out.println(tipoConta);
+
         return contas
                 .stream()
-                .filter(c -> c.getTipo() == tipo)
+                .filter(c -> c.getTipo() == tipoConta)
                 .filter(c -> c.getCliente().getDocumento().equals(documento))
                 .findFirst();
     }

@@ -1,3 +1,5 @@
+import java.util.Optional;
+
 public class Conta {
     private long id;
     private long saldo; // valor em centavos
@@ -99,10 +101,6 @@ public class Conta {
         saldo = saldo + Math.round( ((double) saldo) * taxa);
     }
 
-    public void consultarSaldo() {
-        System.out.println("Saldo da conta é: " + saldo);
-    }
-
     public boolean valorNegativo(long valor, String contexto) {
         if (valor <= 0) {
             System.out.println("Somente valores positivos em " + contexto);
@@ -141,7 +139,66 @@ public class Conta {
         return Math.round( ((double) valor) * taxa );
     }
 
-    public void criarConta() {
+    public static void criarConta() {
+        int novoTipo;
+        System.out.println("Digite o tipo de conta (0 - Corrente, 1 - Poupança, 2 - Investimento): ");
+        novoTipo = Integer.parseInt(BaseDados.getInstancia().getInput().nextLine());
 
+        if (novoTipo < 0 || novoTipo > 2) {
+            System.out.println("Conta não criada: tipo precisa ser '0', '1' ou '2'!");
+            return;
+        }
+
+        String documento;
+        System.out.println("Digite o documento do cliente:");
+        documento = BaseDados.getInstancia().getInput().nextLine();
+
+        Optional<Cliente> optionalCliente = BaseDados.getInstancia().buscarCliente(documento);
+        if (optionalCliente.isEmpty()) {
+            System.out.println("Cliente com o documento informado não encontrado na base de dados!");
+            return;
+        }
+
+        Conta novaConta = new Conta();
+        novaConta.setCliente(optionalCliente.get());
+        novaConta.setSaldo(0L);
+        novaConta.setTipo(novoTipo == 0 ? TipoConta.CORRENTE : novaConta.getTipo());
+        novaConta.setTipo(novoTipo == 1 ? TipoConta.POUPANCA : novaConta.getTipo());
+        novaConta.setTipo(novoTipo == 2 ? TipoConta.INVESTIMENTO : novaConta.getTipo());
+
+        if (BaseDados.getInstancia().adicionarConta(novaConta)) {
+            System.out.println("Conta criada com sucesso!");
+        } else {
+            System.out.println("Conta já existe na base de dados!");
+        }
+    }
+
+    public static void consultarSaldo() {
+        System.out.println("Digite o documento do cliente:");
+        String consultaDocumento;
+        consultaDocumento = BaseDados.getInstancia().getInput().nextLine();
+
+        System.out.println("Digite o tipo de conta (0 - Corrente, 1 - Poupança, 2 - Investimento): ");
+        int tipo;
+        tipo = Integer.parseInt(BaseDados.getInstancia().getInput().nextLine());
+
+        if (tipo < 0 || tipo > 2) {
+            System.out.println("Conta não criada: tipo precisa ser '0', '1' ou '2'!");
+            return;
+        }
+
+        TipoConta consultaTipoConta = null;
+        consultaTipoConta = tipo == 0 ? TipoConta.CORRENTE : consultaTipoConta;
+        consultaTipoConta = tipo == 1 ? TipoConta.POUPANCA : consultaTipoConta;
+        consultaTipoConta = tipo == 2 ? TipoConta.INVESTIMENTO : consultaTipoConta;
+
+        Optional<Conta> conta =  BaseDados.getInstancia().buscarConta(consultaDocumento, consultaTipoConta);
+
+        if (conta.isEmpty()) {
+            System.out.println("Conta não encontrada");
+            return;
+        }
+
+        System.out.println("O saldo da conta é: " + conta.get().getSaldo());
     }
 }
